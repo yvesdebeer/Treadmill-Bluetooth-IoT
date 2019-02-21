@@ -1,0 +1,838 @@
+[
+    {
+        "id": "b5cb0ffc.dae928",
+        "type": "ibmiot in",
+        "z": "acd5f045.ef5cc",
+        "authentication": "boundService",
+        "apiKey": "",
+        "inputType": "evt",
+        "logicalInterface": "",
+        "ruleId": "",
+        "deviceId": "ESPRESSIF",
+        "applicationId": "",
+        "deviceType": "+",
+        "eventType": "+",
+        "commandType": "",
+        "format": "json",
+        "name": "IBM IoT",
+        "service": "registered",
+        "allDevices": "",
+        "allApplications": "",
+        "allDeviceTypes": true,
+        "allLogicalInterfaces": "",
+        "allEvents": true,
+        "allCommands": "",
+        "allFormats": "",
+        "qos": 0,
+        "x": 77.5,
+        "y": 171,
+        "wires": [
+            [
+                "b694a822.9bb638",
+                "d46ef112.0792b8"
+            ]
+        ]
+    },
+    {
+        "id": "b694a822.9bb638",
+        "type": "debug",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 249.21428680419922,
+        "y": 118.99999809265137,
+        "wires": []
+    },
+    {
+        "id": "d46ef112.0792b8",
+        "type": "switch",
+        "z": "acd5f045.ef5cc",
+        "name": "Check Status",
+        "property": "payload.d.Status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Running",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Stopped",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 269.9000473022461,
+        "y": 205.0000286102295,
+        "wires": [
+            [
+                "268e7104.8b733e",
+                "56fae0f3.50759",
+                "12213201.d9f36e",
+                "4ed64880.b10ce",
+                "108aaf5e.568c59"
+            ],
+            [
+                "108aaf5e.568c59",
+                "6a8d551b.f37454",
+                "4e71764f.23a7f",
+                "33ab20be.91f6a8"
+            ]
+        ]
+    },
+    {
+        "id": "2d27f124.fa74e6",
+        "type": "debug",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "payload",
+        "x": 1077.821424484253,
+        "y": 895.2715015411377,
+        "wires": []
+    },
+    {
+        "id": "573d9c9f.16fe2c",
+        "type": "inject",
+        "z": "acd5f045.ef5cc",
+        "name": "Generate Strava Token",
+        "topic": "authorize",
+        "payload": "",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "x": 181.32140731811523,
+        "y": 933.7715091705322,
+        "wires": [
+            [
+                "9e8335f3.76e178"
+            ]
+        ]
+    },
+    {
+        "id": "be9e732.fb3061",
+        "type": "http request",
+        "z": "acd5f045.ef5cc",
+        "name": "OAuth Server",
+        "method": "POST",
+        "ret": "obj",
+        "url": "https://www.strava.com/oauth/token",
+        "tls": "",
+        "x": 876.071418762207,
+        "y": 897.0214996337891,
+        "wires": [
+            [
+                "2d27f124.fa74e6"
+            ]
+        ]
+    },
+    {
+        "id": "e240c01.c55914",
+        "type": "template",
+        "z": "acd5f045.ef5cc",
+        "name": "Auth Form Encode",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "client_id={{credentials.client_id}}&client_secret={{credentials.client_secret}}&code=xxxxxxxxxxxxxxxxxxxxxxx&grant_type=authorization_code",
+        "output": "str",
+        "x": 688.571418762207,
+        "y": 839.5214996337891,
+        "wires": [
+            [
+                "be9e732.fb3061",
+                "69cd586.b6bf7a8"
+            ]
+        ]
+    },
+    {
+        "id": "9e8335f3.76e178",
+        "type": "function",
+        "z": "acd5f045.ef5cc",
+        "name": "Credentials",
+        "func": "msg.credentials = {\n    client_id: \"xxxxx\",\n    client_secret: \"xxxxxxxxxxxxxxxxxxxxxxx\"\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 311.3214302062988,
+        "y": 840.7715129852295,
+        "wires": [
+            [
+                "90b79740.96b7b"
+            ]
+        ]
+    },
+    {
+        "id": "90b79740.96b7b",
+        "type": "function",
+        "z": "acd5f045.ef5cc",
+        "name": "Headers",
+        "func": "msg.headers = {\n    \"Content-Type\": \"application/x-www-form-urlencoded\",\n    \"Accepts\": \"application/json\"\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 494.57141494750977,
+        "y": 840.7714996337891,
+        "wires": [
+            [
+                "e240c01.c55914"
+            ]
+        ]
+    },
+    {
+        "id": "69cd586.b6bf7a8",
+        "type": "debug",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 854.4714450836182,
+        "y": 788.6714630126953,
+        "wires": []
+    },
+    {
+        "id": "bf0a5eb3.f9dfe",
+        "type": "inject",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 214.00711059570312,
+        "y": 701.3571662902832,
+        "wires": [
+            [
+                "a15fe748.47029"
+            ]
+        ]
+    },
+    {
+        "id": "fdd2c597.bffdc8",
+        "type": "http request",
+        "z": "acd5f045.ef5cc",
+        "name": "Create Strava Activity",
+        "method": "POST",
+        "ret": "obj",
+        "url": "https://www.strava.com/api/v3/activities",
+        "tls": "",
+        "x": 962.5071487426758,
+        "y": 699.2572164535522,
+        "wires": [
+            [
+                "48194a8e.87a3a4"
+            ]
+        ]
+    },
+    {
+        "id": "a15fe748.47029",
+        "type": "function",
+        "z": "acd5f045.ef5cc",
+        "name": "Set Headers",
+        "func": "msg.headers = {\n    \"Content-Type\": \"application/x-www-form-urlencoded\",\n    \"Accepts\": \"application/json\",\n    \"Authorization\": \"Bearer xxxxxxxxxxxxxxxxxxxxxxx\"\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 428.50714111328125,
+        "y": 700.7572021484375,
+        "wires": [
+            [
+                "7065a51b.f13f24"
+            ]
+        ]
+    },
+    {
+        "id": "7065a51b.f13f24",
+        "type": "template",
+        "z": "acd5f045.ef5cc",
+        "name": "Set POST params",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "name=Treadmill Run&type=Run&start_date_local={{activity.activity_timestamp}}&elapsed_time={{activity.elapsed_time}}&distance={{activity.total_distance}}&trainer=1\n",
+        "output": "str",
+        "x": 692.2571487426758,
+        "y": 699.6071910858154,
+        "wires": [
+            [
+                "fdd2c597.bffdc8"
+            ]
+        ]
+    },
+    {
+        "id": "b9d1a825.8a5e28",
+        "type": "inject",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "topic": "",
+        "payload": "{\"d\":{\"Minutes\":\"8\",\"Seconds\":\"20\",\"Speed\":\"11\",\"Distance\":\"1500\",\"Status\":\"Running\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "x": 190.71422576904297,
+        "y": 344.2857093811035,
+        "wires": [
+            [
+                "d46ef112.0792b8"
+            ]
+        ]
+    },
+    {
+        "id": "4e71764f.23a7f",
+        "type": "debug",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "false",
+        "x": 470.7142333984375,
+        "y": 87.14285850524902,
+        "wires": []
+    },
+    {
+        "id": "268e7104.8b733e",
+        "type": "function",
+        "z": "acd5f045.ef5cc",
+        "name": "Get Average Speed",
+        "func": "var distance = parseFloat(msg.payload.d.Distance);\nvar minutes = parseFloat(msg.payload.d.Minutes);\nvar seconds = parseFloat(msg.payload.d.Seconds);\nvar total_seconds = minutes * 60 + seconds;\n\nvar speedseconds = Math.round(((total_seconds * 1000)/(distance)) *100 )/100;\n//var speedseconds = Math.round((3600 / speed) * 100)/100;\nvar minutes = parseInt(speedseconds/60);\nvar seconds = Math.round((speedseconds % 60) * 100)/100;\nmsg.payload = Math.round((((minutes * 100)+seconds)/100) * 100)/100;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 575.7857513427734,
+        "y": 335.6072082519531,
+        "wires": [
+            [
+                "33cd05fa.01b2c2"
+            ]
+        ]
+    },
+    {
+        "id": "56fae0f3.50759",
+        "type": "function",
+        "z": "acd5f045.ef5cc",
+        "name": "Get Belt Speed",
+        "func": "//msg.payload=parseFloat(msg.payload.d.Speed);\nif( msg.payload === false ) {\n    return null;\n}\nmsg.payload=parseFloat(msg.payload.d.Speed);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 552.5714721679688,
+        "y": 234.2857208251953,
+        "wires": [
+            [
+                "46fec330.34c8e4"
+            ]
+        ]
+    },
+    {
+        "id": "c990bc1e.21b04",
+        "type": "inject",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "",
+        "x": 121.60714721679688,
+        "y": 259.5714874267578,
+        "wires": [
+            [
+                "d46ef112.0792b8"
+            ]
+        ]
+    },
+    {
+        "id": "12213201.d9f36e",
+        "type": "function",
+        "z": "acd5f045.ef5cc",
+        "name": "Get Distance",
+        "func": "msg.payload = parseFloat(msg.payload.d.Distance)/1000;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 545.0000114440918,
+        "y": 282.25001525878906,
+        "wires": [
+            [
+                "a3a71dcc.e245"
+            ]
+        ]
+    },
+    {
+        "id": "cee9f772.5b73d",
+        "type": "inject",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "topic": "",
+        "payload": "{\"d\":{\"Minutes\":\"8\",\"Seconds\":\"8\",\"Speed\":\"13,07\",\"Distance\":\"2500\",\"Status\":\"Running\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "x": 191.99997329711914,
+        "y": 426.00000762939453,
+        "wires": [
+            [
+                "d46ef112.0792b8"
+            ]
+        ]
+    },
+    {
+        "id": "d6880a39.83b2b",
+        "type": "inject",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "topic": "",
+        "payload": "{\"d\":{\"Minutes\":\"8\",\"Seconds\":\"8\",\"Speed\":\"12,07\",\"Distance\":\"2000\",\"Status\":\"Running\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "x": 191.49998474121094,
+        "y": 384.75001525878906,
+        "wires": [
+            [
+                "d46ef112.0792b8"
+            ]
+        ]
+    },
+    {
+        "id": "4ed64880.b10ce",
+        "type": "function",
+        "z": "acd5f045.ef5cc",
+        "name": "Get Current Speed",
+        "func": "var speed = parseFloat(msg.payload.d.Speed);\nvar speedseconds = Math.round((3600 / speed) * 100)/100;\nvar minutes = parseInt(speedseconds/60);\nvar seconds = Math.round((speedseconds % 60) * 100)/100;\nmsg.payload = Math.round((((minutes * 100)+seconds)/100) * 100)/100;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 569.1999969482422,
+        "y": 385.20001220703125,
+        "wires": [
+            [
+                "dabc5692.7239c8"
+            ]
+        ]
+    },
+    {
+        "id": "54b8ff15.efad3",
+        "type": "debug",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 936.5999870300293,
+        "y": 442.95001792907715,
+        "wires": []
+    },
+    {
+        "id": "44d84988.127f4",
+        "type": "switch",
+        "z": "acd5f045.ef5cc",
+        "name": "Check Strava Athlete",
+        "property": "athlete",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Yves",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 733.6250076293945,
+        "y": 583.2500114440918,
+        "wires": [
+            [
+                "a15fe748.47029",
+                "6459eaf5.694fa4"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "6a8d551b.f37454",
+        "type": "function",
+        "z": "acd5f045.ef5cc",
+        "name": "Set Strava Params",
+        "func": "var date;\ndate = new Date();\ndate = (date.getFullYear() + '-' + ('00' + (date.getMonth()+1)).slice(-2) + '-' + ('00' + date.getDate()).slice(-2) + ' ' + ('00' + date.getHours()).slice(-2) + ':' + ('00' + date.getMinutes()).slice(-2) + ':' + ('00' + date.getSeconds()).slice(-2));\nvar minutes = parseInt(msg.payload.d.Minutes);\nvar seconds = parseInt(msg.payload.d.Seconds);\nvar total_seconds = minutes*60 + seconds;\nvar total_distance = parseInt(msg.payload.d.Distance);\n\nmsg.activity = {\n    activity_timestamp: date,\n    elapsed_time: total_seconds,\n    total_distance: total_distance\n};\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 488.50001525878906,
+        "y": 583.7500152587891,
+        "wires": [
+            [
+                "44d84988.127f4"
+            ]
+        ]
+    },
+    {
+        "id": "6459eaf5.694fa4",
+        "type": "debug",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 944.2500152587891,
+        "y": 531.2500457763672,
+        "wires": []
+    },
+    {
+        "id": "dbc2a3ac.f8643",
+        "type": "inject",
+        "z": "acd5f045.ef5cc",
+        "name": "Stopped",
+        "topic": "",
+        "payload": "{\"d\":{\"Minutes\":\"8\",\"Seconds\":\"20\",\"Speed\":\"11\",\"Distance\":\"1500\",\"Status\":\"Stopped\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "x": 199.75,
+        "y": 500.25,
+        "wires": [
+            [
+                "d46ef112.0792b8"
+            ]
+        ]
+    },
+    {
+        "id": "68f2a330.50631c",
+        "type": "change",
+        "z": "acd5f045.ef5cc",
+        "name": "Set Strava Athlete",
+        "rules": [
+            {
+                "t": "set",
+                "p": "athlete",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 765.9000396728516,
+        "y": 503.40003967285156,
+        "wires": [
+            [
+                "54b8ff15.efad3"
+            ]
+        ]
+    },
+    {
+        "id": "b29eb583.db7b8",
+        "type": "ui_button",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "group": "2a48ac11.b380a4",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Clear",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "[]",
+        "payloadType": "json",
+        "topic": "",
+        "x": 635.1428985595703,
+        "y": 167.7143096923828,
+        "wires": [
+            [
+                "46fec330.34c8e4",
+                "33cd05fa.01b2c2",
+                "a3a71dcc.e245",
+                "dabc5692.7239c8",
+                "108aaf5e.568c59",
+                "33ab20be.91f6a8"
+            ]
+        ]
+    },
+    {
+        "id": "33ab20be.91f6a8",
+        "type": "ui_dropdown",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "label": "",
+        "tooltip": "",
+        "place": "Select option",
+        "group": "ede6a46c.e6cf98",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "options": [
+            {
+                "label": "Yves",
+                "value": "Yves",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "",
+        "x": 553.9000091552734,
+        "y": 503.40003967285156,
+        "wires": [
+            [
+                "68f2a330.50631c"
+            ]
+        ]
+    },
+    {
+        "id": "33cd05fa.01b2c2",
+        "type": "ui_gauge",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "group": "599f551f.1cb4a4",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Average Speed - min/km",
+        "label": "Min/Km",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#CA3838",
+            "#E6E600",
+            "#00B500"
+        ],
+        "seg1": "5",
+        "seg2": "6",
+        "x": 891.3571014404297,
+        "y": 334.82147216796875,
+        "wires": []
+    },
+    {
+        "id": "dabc5692.7239c8",
+        "type": "ui_gauge",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "group": "2a48ac11.b380a4",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Current Speed - min/km",
+        "label": "Min/Km",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#CA3838",
+            "#E6E600",
+            "#00B500"
+        ],
+        "seg1": "5",
+        "seg2": "6",
+        "x": 890.1999969482422,
+        "y": 383.20001220703125,
+        "wires": []
+    },
+    {
+        "id": "a3a71dcc.e245",
+        "type": "ui_gauge",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "group": "599f551f.1cb4a4",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Distance - km",
+        "label": "Km",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00B500",
+            "#E6E600",
+            "#CA3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 859.0000152587891,
+        "y": 282.0000457763672,
+        "wires": []
+    },
+    {
+        "id": "108aaf5e.568c59",
+        "type": "ui_text",
+        "z": "acd5f045.ef5cc",
+        "group": "2a48ac11.b380a4",
+        "order": 5,
+        "width": "0",
+        "height": "0",
+        "name": "",
+        "label": "",
+        "format": "{{msg.payload.d.Status}}",
+        "layout": "col-center",
+        "x": 534.6500358581543,
+        "y": 450.4500217437744,
+        "wires": []
+    },
+    {
+        "id": "46fec330.34c8e4",
+        "type": "ui_chart",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "group": "2a48ac11.b380a4",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Belt Speed - km/h",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "20",
+        "removeOlder": "60",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 866.2500190734863,
+        "y": 233.75000762939453,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "692bf668.3f38a8",
+        "type": "comment",
+        "z": "acd5f045.ef5cc",
+        "name": "Enter credentials here",
+        "info": "Enter an authorization key, your client/product id and secret here.",
+        "x": 299.5714454650879,
+        "y": 787.7715091705322,
+        "wires": []
+    },
+    {
+        "id": "48194a8e.87a3a4",
+        "type": "debug",
+        "z": "acd5f045.ef5cc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1157.250015258789,
+        "y": 697.2500095367432,
+        "wires": []
+    },
+    {
+        "id": "39368cf9.3f514c",
+        "type": "comment",
+        "z": "acd5f045.ef5cc",
+        "name": "Enter credentials here",
+        "info": "Enter an authorization key, your client/product id and secret here.",
+        "x": 669,
+        "y": 787,
+        "wires": []
+    },
+    {
+        "id": "ba64e01c.e10e9",
+        "type": "comment",
+        "z": "acd5f045.ef5cc",
+        "name": "Enter Authentication Token here",
+        "info": "",
+        "x": 436,
+        "y": 653,
+        "wires": []
+    },
+    {
+        "id": "2a48ac11.b380a4",
+        "type": "ui_group",
+        "z": 0,
+        "name": "Treadmill graphs",
+        "tab": "2257dc74.637d54",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ede6a46c.e6cf98",
+        "type": "ui_group",
+        "z": 0,
+        "name": "Strava Athlete",
+        "tab": "2257dc74.637d54",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "599f551f.1cb4a4",
+        "type": "ui_group",
+        "z": 0,
+        "name": "Monitor",
+        "tab": "2257dc74.637d54",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "2257dc74.637d54",
+        "type": "ui_tab",
+        "z": 0,
+        "name": "Threadmill - Focus Fitness Senator",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
